@@ -1,7 +1,8 @@
 const { default: mongoose } = require("mongoose");
 const Joi = require("joi");
-const passwordComplixity = require("joi-password-complexity");
+const passwordComplexity = require("joi-password-complexity");
 const jwt = require("jsonwebtoken");
+
 const userSchema = mongoose.Schema(
   {
     username: {
@@ -23,15 +24,39 @@ const userSchema = mongoose.Schema(
       trim: true,
       minlength: 8,
     },
-    profilePhoto: {
-      type: Object,
-      default: {
-        url: "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png",
-        publicId: null,
-      },
-    },
-    token: {
+    street: {
       type: String,
+      required: true,
+    },
+    apartment: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    zip: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    profilePhoto: {
+      url: {
+        type: String,
+        default: "https://s3.amazonaws.com/37assets/svn/765-default-avatar.png",
+      },
+      publicId: {
+        type: String,
+        default: null,
+      },
     },
     isAdmin: {
       type: Boolean,
@@ -46,30 +71,43 @@ const userSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
 userSchema.methods.generateAuthToken = function () {
   return jwt.sign(
     {
       id: this._id,
       email: this.email,
-      token: this.token,
       isAdmin: this.isAdmin,
     },
-    process.env.JWT_SECRET_KEY
+    process.env.JWT_SECRET_KEY,
+    { expiresIn: "1h" }
   );
 };
+
 const validateRegister = (obj) => {
   const schema = Joi.object({
-    username: Joi.string().alphanum().min(3).max(30).required(),
+    username: Joi.string().min(8).max(30).required(),
     email: Joi.string()
       .email({
         minDomainSegments: 2,
         tlds: { allow: ["com", "net"] },
       })
       .required(),
-    password: passwordComplixity().required(),
+    password: passwordComplexity().required(),
+    street: Joi.string().min(3).max(50).required(),
+    apartment: Joi.string().min(1).max(50).required(),
+    city: Joi.string().min(2).max(50).required(),
+    zip: Joi.string().min(2).max(20).required(),
+    country: Joi.string().min(2).max(50).required(),
+    phone: Joi.string()
+      .pattern(/^[0-9()+\- ]+$/)
+      .min(3)
+      .max(30)
+      .required(),
   });
   return schema.validate(obj);
 };
+
 const validateLogin = (obj) => {
   const schema = Joi.object({
     email: Joi.string()
@@ -85,12 +123,21 @@ const validateLogin = (obj) => {
 
 const validateUpdateUser = (obj) => {
   const schema = Joi.object({
-    username: Joi.string().alphanum().min(3).max(30),
+    username: Joi.string().min(8).max(30),
     email: Joi.string().email({
       minDomainSegments: 2,
       tlds: { allow: ["com", "net"] },
     }),
-    password: passwordComplixity(),
+    password: passwordComplexity(),
+    street: Joi.string().min(3).max(50),
+    apartment: Joi.string().min(1).max(50),
+    city: Joi.string().min(2).max(50),
+    zip: Joi.string().min(2).max(20),
+    country: Joi.string().min(2).max(50),
+    phone: Joi.string()
+      .pattern(/^[0-9()+\- ]+$/)
+      .min(3)
+      .max(30),
   });
   return schema.validate(obj);
 };

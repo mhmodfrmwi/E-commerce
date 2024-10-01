@@ -69,7 +69,6 @@ const Login = asyncHandler(async (req, res) => {
 
   const token = user.generateAuthToken();
 
-  user.token = token;
   return res.status(200).json({
     _id: user._id,
     username: user.username,
