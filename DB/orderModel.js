@@ -55,6 +55,7 @@ const orderSchema = new mongoose.Schema(
 
 const validateCreateOrder = (obj) => {
   const schema = Joi.object({
+    orderItems: Joi.array().items(Joi.object().required()).required(),
     shippingAddress1: Joi.string().min(5).max(100).required(),
     shippingAddress2: Joi.string().min(5).max(100).allow(""),
     city: Joi.string().min(2).max(50).required(),
@@ -74,9 +75,17 @@ const validateCreateOrder = (obj) => {
   });
   return schema.validate(obj);
 };
-
+const validateUpdateOrderStatus = (obj) => {
+  const schema = Joi.object({
+    status: Joi.string()
+      .valid("Pending", "Processing", "Shipped", "Delivered", "Cancelled")
+      .required(),
+  });
+  return schema.validate(obj);
+};
 const Order = mongoose.model("Order", orderSchema);
 module.exports = {
   Order,
   validateCreateOrder,
+  validateUpdateOrderStatus,
 };

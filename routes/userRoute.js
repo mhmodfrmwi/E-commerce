@@ -3,7 +3,7 @@ const usersControllers = require("../controllers/userController");
 const verifyTokens = require("../middlewares/verifyTokens");
 const route = express.Router();
 const validateObjectId = require("../middlewares/validateObjectId");
-const upload = require("../middlewares/uploadPhoto");
+const { upload } = require("../middlewares/uploadPhoto");
 route
   .route("/")
   .get(verifyTokens.verifyTokenAndCheckAdmin, usersControllers.getUsers);

@@ -14,6 +14,21 @@ const uploadToCloudinary = async (file) => {
     throw new Error("internal server error (cloudinary)");
   }
 };
+const uploadMultipleToCloudinary = async (files) => {
+  try {
+    const uploadPromises = files.map((file) => {
+      return cloudinary.uploader.upload(file, {
+        resource_type: "auto",
+      });
+    });
+
+    const results = await Promise.all(uploadPromises);
+    return results;
+  } catch (error) {
+    throw new Error("internal server error (cloudinary)");
+  }
+};
+
 const removeFromCloudinary = async (imagePublicId) => {
   try {
     const data = await cloudinary.uploader.destroy(imagePublicId);
@@ -33,6 +48,7 @@ const removeMultibleFromCloudinary = async (publicIds) => {
 
 module.exports = {
   uploadToCloudinary,
+  uploadMultipleToCloudinary,
   removeFromCloudinary,
   removeMultibleFromCloudinary,
 };

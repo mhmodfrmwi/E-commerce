@@ -10,16 +10,6 @@ const categorySchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  icon: {
-    url: {
-      type: String,
-      default: "",
-    },
-    publicId: {
-      type: String,
-      default: null,
-    },
-  },
   image: {
     url: {
       type: String,

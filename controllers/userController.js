@@ -2,7 +2,10 @@ const asyncHandler = require("express-async-handlr");
 const { User, validateUpdateUser } = require("../DB/userModel");
 const bcrypt = require("bcrypt");
 const path = require("path");
-const { uploadToCloudinary } = require("../utils/cloudinary");
+const {
+  uploadToCloudinary,
+  removeFromCloudinary,
+} = require("../utils/cloudinary");
 const fs = require("fs");
 /**------------------------------------------------
  * @desc get all users
@@ -82,7 +85,7 @@ const updateUserProfilePhot = asyncHandler(async (req, res) => {
   user.profilePhoto.publicId = photo.public_id;
   await user.save();
   fs.unlinkSync(imagePath);
-  res.status(200).json({ message: "your profile photo uploaded successfully" });
+  res.status(200).json({ message: "Your profile photo uploaded successfully" });
 });
 
 /**------------------------------------------------
@@ -94,7 +97,9 @@ const updateUserProfilePhot = asyncHandler(async (req, res) => {
 
 const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndDelete(req.params.userId);
-
+  if (user.profilePhoto.publicId) {
+    await removeFromCloudinary(user.profilePhoto.publicId);
+  }
   return res.status(200).json({ message: "User deleted successfully" });
 });
 
