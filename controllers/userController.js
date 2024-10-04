@@ -78,9 +78,12 @@ const updateUserProfilePhot = asyncHandler(async (req, res) => {
   const photo = await uploadToCloudinary(imagePath);
 
   const user = await User.findById(req.user.id);
+  console.log(user);
+
   if (user.profilePhoto.publicId) {
     await removeFromCloudinary(user.profilePhoto.publicId);
   }
+
   user.profilePhoto.url = photo.url;
   user.profilePhoto.publicId = photo.public_id;
   await user.save();

@@ -7,7 +7,10 @@ const {
 } = require("../DB/categoryModel");
 const fs = require("fs");
 const path = require("path");
-const { uploadToCloudinary } = require("../utils/cloudinary");
+const {
+  uploadToCloudinary,
+  removeFromCloudinary,
+} = require("../utils/cloudinary");
 
 /**------------------------------------------------
  * @desc get all categories
